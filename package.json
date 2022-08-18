@@ -9,12 +9,15 @@
   "author": "Rafael Noll",
   "license": "ISC",
   "dependencies": {
-    "@types/jest": "^28.1.7",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "jest": "^28.1.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.5.2",
+    "mongoose": "^6.5.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^28.1.7",
+    "jest": "^28.1.3",
+    "jest-jasmine2": "^28.1.3",
     "supertest": "^6.2.4"
   }
 }
