@@ -2,6 +2,24 @@ const app = require("../src/app");
 const supertest = require("supertest");
 const request = supertest(app);
 
+const mainUser = {
+    name: "Rafael Noll",
+    email: "rafael@email.com",
+    password: "12345"
+};
+
+beforeAll(() => {
+    return request.post("/user").send(mainUser)
+        .then(res => { })
+        .catch(err => { console.log(err) });
+});
+
+afterAll(() => {
+    return request.delete(`/user/${mainUser.email}`)
+        .then(res => { })
+        .catch(err => { console.log(err) });
+});
+
 describe("Cadastro de usuário", () => {
 
     test("Deve cadastrar um usuário com sucesso", () => {
@@ -56,7 +74,7 @@ describe("Cadastro de usuário", () => {
                     .send(user)
                     .then((res) => {
                         expect(res.statusCode).toEqual(400);
-                        expect(res.body.error).toEqual("E-mail já cadastrado");
+                        expect(res.body.error).toEqual("E-mail already registered");
                     }).catch(err => {
                         fail(err);
                     });
@@ -66,4 +84,17 @@ describe("Cadastro de usuário", () => {
 
     });
 
+});
+
+describe("Autenticação", () => {
+    test("Deve me retornar um token quando logar", () => {
+        return request.post("/auth")
+            .send({ email: mainUser.email, password: mainUser.password })
+            .then(res => {
+                expect(res.statusCode).toEqual(200);
+                expect(res.body.token).toBeDefined()
+            }).catch(err => {
+                fail(err);
+            });
+    });
 });
