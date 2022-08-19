@@ -45,25 +45,41 @@ router.post("/auth", async (req, res) => {
 
     if (email && password != undefined) {
         const user = await UserModel.findOne({ "email": email });
-        const correct = bcrypt.compare(password, user.password);
 
-        if (correct) {
-            jwt.sign({ email }, JWTSecret, { expiresIn: "48h" }, (error, token) => {
-                if (error) {
-                    console.log(error);
-                    res.sendStatus(500);
-                    return;
+        if (user) {
+            const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+            if (isPasswordCorrect) {
+                jwt.sign({ email, name: user.name, id: user._id }, JWTSecret, { expiresIn: "48h" }, (error, token) => {
+                    if (error) {
+                        console.log(error);
+                        res.sendStatus(500);
+                        return;
+                    }
+                    res.json({ token });
+                });
+                return;
+            }
+
+            res.status(403);
+            res.json({
+                errors: {
+                    password: "Password is wrong"
                 }
-                res.json({ token });
             });
             return;
         }
 
-        res.sendStatus(400);
+        res.status(403);
+        res.json({
+            errors: {
+                email: "Email not registered"
+            }
+        });
         return;
     }
 
-    res.sendStatus(404);
+    res.sendStatus(400);
 });
 
 // This route is just for development mode and is used just in tests

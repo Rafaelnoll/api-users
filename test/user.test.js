@@ -97,4 +97,26 @@ describe("Autenticação", () => {
                 fail(err);
             });
     });
+
+    test("Deve impedir que um usuário não cadastrado receba o token de autenticação", () => {
+        return request.post("/auth")
+            .send({ email: "umemailqualquer@teste.com", password: "senhaerrada123" })
+            .then(res => {
+                expect(res.statusCode).toEqual(403);
+                expect(res.body.errors.email).toEqual("Email not registered")
+            }).catch(err => {
+                fail(err);
+            });
+    });
+
+    test("Deve impedir que um usuário receba o token de autenticação usando uma senha errada", () => {
+        return request.post("/auth")
+            .send({ email: mainUser.email, password: "senhaerrada123" })
+            .then(res => {
+                expect(res.statusCode).toEqual(403);
+                expect(res.body.errors.password).toEqual("Password is wrong")
+            }).catch(err => {
+                fail(err);
+            });
+    });
 });
